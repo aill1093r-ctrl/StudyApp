@@ -1,0 +1,38 @@
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.button import Button
+from kivy.uix.label import Label
+from plyer import notification
+
+class StudyApp(App):
+    def build(self):
+        self.title = "تطبيق الدراسة"
+        layout = BoxLayout(orientation='vertical', padding=20, spacing=20)
+        
+        lbl = Label(
+            text="مرحباً بك في تطبيق التذكير المباشر",
+            font_size='20sp'
+        )
+        
+        btn = Button(
+            text="إرسال إشعار تجريبي 🔔",
+            size_hint=(1, 0.3),
+            background_color=(0.2, 0.6, 1, 1)
+        )
+        btn.bind(on_press=self.send_notification)
+        
+        layout.add_widget(lbl)
+        layout.add_widget(btn)
+        return layout
+
+    def send_notification(self, instance):
+        # إرسال إشعار محلي إلى شاشة الأندرويد
+        notification.notify(
+            title="تذكير الدراسة 📚",
+            message="حان وقت مراجعة المادة الجدولة!",
+            app_name="StudyApp",
+            timeout=10
+        )
+
+if __name__ == '__main__':
+    StudyApp().run()

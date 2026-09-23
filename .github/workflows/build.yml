@@ -33,3 +33,4 @@ jobs:
         with:
           name: StudyApp-APK
           path: bin/*.apk
+

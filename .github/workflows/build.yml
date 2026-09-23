@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -20,7 +20,7 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential libssl-dev libffi-dev python3-dev zip unzip ccache libncurses5 libstdc++6 zlib1g
+          sudo apt-get install -y build-essential libssl-dev libffi-dev python3-dev zip unzip ccache libncurses5 libstdc++6 zlib1g openjdk-17-jdk
 
       - name: Install Python dependencies
         run: |

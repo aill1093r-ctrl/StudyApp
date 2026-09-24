@@ -35,7 +35,7 @@ jobs:
           echo "💡 Note: Download & NDK compilation happens in this step."
           export CI=true
           export APP_ANDROID_ACCEPT_SDK_LICENSES=1
-          buildozer --warn-on-root false android debug
+          buildozer android debug
 
       - name: Upload APK Artifact
         if: success()

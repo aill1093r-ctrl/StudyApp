@@ -19,27 +19,28 @@ jobs:
 
       - name: Install system dependencies
         run: |
-          echo "⏱️ [1/3] Installing System Dependencies..."
           sudo apt-get update
           sudo apt-get install -y build-essential libssl-dev libffi-dev python3-dev zip unzip ccache openjdk-17-jdk
 
       - name: Install Python dependencies
         run: |
-          echo "⏱️ [2/3] Installing Buildozer & Cython..."
           pip install --upgrade pip
           pip install buildozer cython==0.29.33
 
-      - name: Setup Android SDK Environment & Build
+      - name: Auto-Install Missing SDK Tools & Build
         run: |
-          echo "⏱️ [3/3] Compiling Android APK..."
+          # 1. قبول جميع التراخيص وتحديث الأدوات الحالية تلقائياً
+          yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses || true
+          yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --update || true
+
+          # 2. تثبيت الحزم الأساسية وأداة aidl تلقائياً إن وجدت أي أداة مفقودة
+          yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "build-tools;33.0.2" "platforms;android-33" "platform-tools" "tools"
+
+          # 3. إشعار Buildozer بالمسارات وتنسيق عملية التجميع
           export ANDROID_HOME=$ANDROID_SDK_ROOT
           export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/33.0.2:$PATH
-          
-          # Accept SDK licenses automatically
-          yes | sdkmanager --licenses || true
-          
-          # Build APK
           export CI=true
+          
           buildozer android debug
 
       - name: Upload APK Artifact

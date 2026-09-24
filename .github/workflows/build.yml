@@ -27,12 +27,19 @@ jobs:
           pip install --upgrade pip
           pip install buildozer cython==0.29.33
 
-      - name: Build APK directly
+      - name: Build APK directly with Verbose Logs
         run: |
-          buildozer android debug
+          buildozer -v android debug
 
       - name: Upload APK Artifact
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: StudyApp-APK
           path: bin/*.apk
+
+      - name: Print Build Logs on Failure
+        if: failure()
+        run: |
+          echo "=== BUILDOZER LOGS ==="
+          cat .buildozer/android/platform/build-*/build.log || echo "No build log found"

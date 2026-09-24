@@ -19,22 +19,39 @@ jobs:
 
       - name: Install system dependencies
         run: |
-          echo "⏱️ [1/4] Installing System Dependencies (Est: 30s)..."
+          echo "⏱️ [1/4] Installing System Dependencies..."
           sudo apt-get update
           sudo apt-get install -y build-essential libssl-dev libffi-dev python3-dev zip unzip ccache openjdk-17-jdk
 
+      - name: Set up Android SDK & Install AIDL
+        run: |
+          echo "⏱️ [2/4] Setting up Android SDK Tools & AIDL..."
+          mkdir -p $HOME/android-sdk/cmdline-tools
+          cd $HOME/android-sdk/cmdline-tools
+          curl -s https://dl.google.com/android/repository/commandlinetools-linux-9441835_latest.zip -o tools.zip
+          unzip -q tools.zip -d latest_tmp
+          mv latest_tmp/cmdline-tools latest
+          rm tools.zip
+          
+          export ANDROID_HOME=$HOME/android-sdk
+          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH
+          
+          yes | sdkmanager --sdk_root=$ANDROID_HOME "build-tools;33.0.2" "platforms;android-33" "platform-tools"
+
       - name: Install Python dependencies
         run: |
-          echo "⏱️ [2/4] Installing Buildozer & Cython (Est: 15s)..."
+          echo "⏱️ [3/4] Installing Buildozer & Cython..."
           pip install --upgrade pip
           pip install buildozer cython==0.29.33
 
       - name: Build APK Non-Interactively
         run: |
-          echo "⏱️ [3/4] Compiling Android APK (Est: 10 - 15 minutes total)..."
-          echo "💡 Note: Download & NDK compilation happens in this step."
+          echo "⏱️ [4/4] Compiling Android APK (Est: 10 - 15 minutes)..."
+          export ANDROID_HOME=$HOME/android-sdk
+          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH
           export CI=true
           export APP_ANDROID_ACCEPT_SDK_LICENSES=1
+          
           buildozer android debug
 
       - name: Upload APK Artifact
